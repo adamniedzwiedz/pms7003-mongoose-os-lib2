@@ -1,0 +1,22 @@
+author: adamniedzwiedz <niedzwiedz.adam@gmail.com>
+description: PMS7003 dust sensor library v2
+type: lib
+version: 1.0
+
+sources:
+  - src
+
+includes:
+  - include
+
+tags:
+  - c
+  - hw
+  - pms7003
+
+# Set the debug UART as UART1
+config_schema:
+ - ["debug.stdout_uart", 1]
+ - ["debug.stderr_uart", 1]
+
+manifest_version: 2017-09-29
