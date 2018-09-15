@@ -31,7 +31,7 @@ struct pms7003_measure {
     unsigned long num10_0um;
 };
 
-struct mgos_pms7003* pms7003_init(int uart_no, pms7003_callback cb);
+struct mgos_pms7003* pms7003_init(int uart_no, pms7003_callback cb, enum pms7003_mode mode);
 bool pms7003_set_mode(struct mgos_pms7003* pms7003, enum pms7003_mode mode);
 bool pms7003_sleep(struct mgos_pms7003* pms7003);
 bool pms7003_wakeup(struct mgos_pms7003* pms7003);

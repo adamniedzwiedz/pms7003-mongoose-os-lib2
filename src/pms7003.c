@@ -135,42 +135,6 @@ static void uart_dispatcher(int uart_no, void *arg) {
   mbuf_free(&data);
 }
 
-struct mgos_pms7003* pms7003_init(int uart_no, pms7003_callback cb) {
-  struct mgos_uart_config ucfg;
-  struct mgos_pms7003* pms7003;
-
-  if (pms7003_cb == NULL) {
-    LOG(LL_ERROR, ("parameter pms7003_callback cannot be null\r\n"));
-    return NULL;
-  }
-
-  pms7003 = calloc(1, sizeof(*pms7003));  
-
-  if (pms7003 == NULL) {
-    LOG(LL_ERROR, ("Cannot create mgos_pms7003 structure.\r\n"));
-    return NULL;
-  }
-
-  // configure UART - PMS7003 uses 9600bps
-  mgos_uart_config_set_defaults(uart_no, &ucfg);
-  ucfg.baud_rate = 9600;
-
-  if (!mgos_uart_configure(uart_no, &ucfg)) {
-    LOG(LL_ERROR, ("Cannot configure UART%d \r\n", uart_no));
-    free(pms7003);
-    return NULL;
-  } 
-
-  pms7003_cb = cb;;
-
-  // register UART handler (when data received) and enable receiver
-  mgos_uart_set_dispatcher(uart_no, uart_dispatcher, &uart_no /* arg */);
-  mgos_uart_set_rx_enabled(uart_no, true);
-
-  pms7003->uart = uart_no;
-  return pms7003;
-}
-
 bool pms7003_set_mode(struct mgos_pms7003* pms7003, enum pms7003_mode mode) { 
   size_t written;
   if (pms7003 == NULL) {
@@ -234,4 +198,43 @@ bool pms7003_request_read(struct mgos_pms7003* pms7003) {
     return false;
   }
   return true;
+}
+
+struct mgos_pms7003* pms7003_init(int uart_no, pms7003_callback cb, enum pms7003_mode mode) {
+  struct mgos_uart_config ucfg;
+  struct mgos_pms7003* pms7003;
+
+  if (cb == NULL) {
+    LOG(LL_ERROR, ("parameter pms7003_callback cannot be null\r\n"));
+    return NULL;
+  }
+
+  pms7003 = calloc(1, sizeof(*pms7003));  
+
+  if (pms7003 == NULL) {
+    LOG(LL_ERROR, ("Cannot create mgos_pms7003 structure.\r\n"));
+    return NULL;
+  }
+
+  // configure UART - PMS7003 uses 9600bps
+  mgos_uart_config_set_defaults(uart_no, &ucfg);
+  ucfg.baud_rate = 9600;
+
+  if (!mgos_uart_configure(uart_no, &ucfg)) {
+    LOG(LL_ERROR, ("Cannot configure UART%d \r\n", uart_no));
+    free(pms7003);
+    return NULL;
+  } 
+
+  pms7003_cb = cb;
+  pms7003->uart = uart_no;
+
+  // set mode
+  pms7003_set_mode(pms7003, mode); 
+
+  // register UART handler (when data received) and enable receiver
+  mgos_uart_set_dispatcher(uart_no, uart_dispatcher, &uart_no /* arg */);
+  mgos_uart_set_rx_enabled(uart_no, true);
+
+  return pms7003;
 }
