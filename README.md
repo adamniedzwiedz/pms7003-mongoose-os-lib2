@@ -89,4 +89,4 @@ config_schema:
   - ["debug.level", 3]
 ```
 
-The default baud rate of the debug port (UART1) is *115.2kbps*
+The default baud rate of the debug port (*UART1*) is **115.2kbps**
