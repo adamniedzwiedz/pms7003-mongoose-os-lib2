@@ -85,14 +85,14 @@ bool pms7003_validate_checksum(unsigned char* frame) {
 }
 
 static void uart_dispatcher(int uart_no, void *arg) {
-  LOG(LL_INFO, ("0. system free memory: %d\r\n", mgos_get_free_heap_size()));
+  //LOG(LL_INFO, ("0. system free memory: %d\r\n", mgos_get_free_heap_size()));
   char data_str[PMS7003_FRAME_LEN * 2 + 1];
   struct mbuf data = {0};
   struct pms7003_measure measure;
   unsigned char *frame;
   int* pms7003_uart = arg;
 
-  LOG(LL_INFO, ("1. system free memory: %d\r\n", mgos_get_free_heap_size()));
+  //LOG(LL_INFO, ("1. system free memory: %d\r\n", mgos_get_free_heap_size()));
 
   if (pms7003_uart == NULL) {
     LOG(LL_ERROR, ("NULL pms7003_uart argument in uart_dispatcher callback.\r\n"));
@@ -107,12 +107,12 @@ static void uart_dispatcher(int uart_no, void *arg) {
 
   mgos_uart_read_mbuf(uart_no, &data, available);
 
-  LOG(LL_INFO, ("2. system free memory: %d\r\n", mgos_get_free_heap_size()));
+  //LOG(LL_INFO, ("2. system free memory: %d\r\n", mgos_get_free_heap_size()));
 
   // find PMS7003 frame 
   frame = pms7003_find_frame((unsigned char*)data.buf, data.len);
 
-  LOG(LL_INFO, ("3. system free memory: %d\r\n", mgos_get_free_heap_size()));
+  //LOG(LL_INFO, ("3. system free memory: %d\r\n", mgos_get_free_heap_size()));
 
   if (frame == NULL) return;
 
