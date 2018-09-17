@@ -112,9 +112,9 @@ static void uart_dispatcher(int uart_no, void *arg) {
   // find PMS7003 frame 
   frame = pms7003_find_frame((unsigned char*)data.buf, data.len);
 
-  //LOG(LL_INFO, ("3. system free memory: %d\r\n", mgos_get_free_heap_size()));
-
   if (frame == NULL) return;
+
+  LOG(LL_INFO, ("3. system free memory: %d\r\n", mgos_get_free_heap_size()));
 
   cs_to_hex(data_str, frame, PMS7003_FRAME_LEN); 
   LOG(LL_DEBUG, ("PMS7003 data: %s\r\n", data_str));
