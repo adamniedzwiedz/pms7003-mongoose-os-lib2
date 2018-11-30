@@ -96,7 +96,10 @@ static void uart_dispatcher(int uart_no, void *arg) {
     return;
   }
 
-  assert(uart_no == *pms7003_uart);
+  if (uart_no != *pms7003_uart) {
+    LOG(LL_DEBUG, ("PMS7003 uart: %d, Triggered uart: %d\r\n", *pms7003_uart, uart_no));
+    return;
+  }
 
   // read UART data if available
   size_t available = mgos_uart_read_avail(uart_no);
