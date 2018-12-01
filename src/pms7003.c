@@ -110,7 +110,10 @@ static void uart_dispatcher(int uart_no, void *arg) {
   // find PMS7003 frame 
   frame = pms7003_find_frame((unsigned char*)data.buf, data.len);
 
-  if (frame == NULL) return;
+  if (frame == NULL) {
+    mbuf_free(&data);
+    return;
+  }
 
   cs_to_hex(data_str, frame, PMS7003_FRAME_LEN); 
   LOG(LL_DEBUG, ("PMS7003 data: %s\r\n", data_str));
