@@ -204,6 +204,10 @@ bool pms7003_request_read(struct mgos_pms7003* pms7003) {
 }
 
 struct mgos_pms7003* pms7003_init(int uart_no, pms7003_callback cb, enum pms7003_mode mode) {
+  return pms7003_init_dev(uart_no, cb, mode, NULL);
+}
+
+struct mgos_pms7003* pms7003_init_dev(int uart_no, pms7003_callback cb, enum pms7003_mode mode, struct mgos_uart_dev_config *dev) {
   struct mgos_uart_config ucfg;
   struct mgos_pms7003* pms7003;
 
@@ -222,6 +226,14 @@ struct mgos_pms7003* pms7003_init(int uart_no, pms7003_callback cb, enum pms7003
   // configure UART - PMS7003 uses 9600bps
   mgos_uart_config_set_defaults(uart_no, &ucfg);
   ucfg.baud_rate = 9600;
+
+  if (dev != NULL) {
+    struct mgos_uart_dev_config *dcfg = &ucfg.dev;
+    dcfg->rx_gpio = dev->rx_gpio;
+    dcfg->tx_gpio = dev->tx_gpio;
+    dcfg->cts_gpio = dev->cts_gpio;
+    dcfg->rts_gpio = dev->rts_gpio;  
+  }
 
   if (!mgos_uart_configure(uart_no, &ucfg)) {
     LOG(LL_ERROR, ("Cannot configure UART%d \r\n", uart_no));
