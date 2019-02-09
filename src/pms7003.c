@@ -1,6 +1,7 @@
 #include "mgos.h"
 #include "mgos_gpio.h"
 #include "pms7003.h"
+#include "common/platform.h"
 
 #define PMS7003_FRAME_LEN 32
 #define PMS7003_FRAME_START1 0x42
@@ -207,10 +208,18 @@ bool pms7003_request_read(struct mgos_pms7003* pms7003) {
 }
 
 struct mgos_pms7003* pms7003_init(int uart_no, pms7003_callback cb, enum pms7003_mode mode) {
+#if CS_PLATFORM == CS_P_ESP32 
   return pms7003_init_dev(uart_no, cb, mode, NULL);
+#else
+  return pms7003_init_dev(uart_no, cb, mode);
+#endif
 }
 
+#if CS_PLATFORM == CS_P_ESP32 
 struct mgos_pms7003* pms7003_init_dev(int uart_no, pms7003_callback cb, enum pms7003_mode mode, struct mgos_uart_dev_config *dev) {
+#else
+struct mgos_pms7003* pms7003_init_dev(int uart_no, pms7003_callback cb, enum pms7003_mode mode) {
+#endif
   struct mgos_uart_config ucfg;
   struct mgos_pms7003* pms7003;
 
@@ -230,6 +239,7 @@ struct mgos_pms7003* pms7003_init_dev(int uart_no, pms7003_callback cb, enum pms
   mgos_uart_config_set_defaults(uart_no, &ucfg);
   ucfg.baud_rate = 9600;
 
+#if CS_PLATFORM == CS_P_ESP32 
   if (dev != NULL) {
     struct mgos_uart_dev_config *dcfg = &ucfg.dev;
     dcfg->rx_gpio = dev->rx_gpio;
@@ -237,6 +247,7 @@ struct mgos_pms7003* pms7003_init_dev(int uart_no, pms7003_callback cb, enum pms
     dcfg->cts_gpio = dev->cts_gpio;
     dcfg->rts_gpio = dev->rts_gpio;  
   }
+#endif
 
   if (!mgos_uart_configure(uart_no, &ucfg)) {
     LOG(LL_ERROR, ("Cannot configure UART%d \r\n", uart_no));
